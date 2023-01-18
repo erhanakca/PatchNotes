@@ -1,36 +1,39 @@
 @extends('layout.app')
 @section('content')
 
-    <div class="container mt-4">
-        <nav class="navbar bg-body-tertiary">
+
+        <nav class="navbar bg-body-tertiary m-sm-3">
             <div class="container-fluid">
-                <a class="navbar-brand text-body-secondary">Patch Notes</a>
+                <a class="navbar-brand text-body-secondary text-body-emphasis"><i class="bi bi-journals m-lg-2"></i>Patch Notes</a>
                 <form class="d-flex" action="#">
                     <button class="btn btn-success" type="submit">Add New Patch Note</button>
                 </form>
             </div>
         </nav>
 
-        <div class="row">
-            <div class='col-sm-6'>
+
+
+        <div class="row mt-5 m-sm-3">
+            <div class='col-sm-3'>
+                <footer class="text-body-secondary mb-3">Pick Release Date</footer>
                 <div class="form-group">
-                    <div class='input-group date' id='datetimepicker1'>
-                        <input type='text' class="form-control" id="tarih" />
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
+                    <form action="#">
+                    <div class='input-group date mb-3'>
+                        <input type='date' class="form-control" placeholder="dd.mm.yyyy" />
                     </div>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="submit" class="btn btn-success">Reset All Filters</button>
+                    </form>
+
                 </div>
             </div>
 
-            <script>
-                $( function() {
-                    $("#tarih").datepicker();
-                } );
-            </script>
 
 
 
-    </div>
+
+
+        </div>
 
 
 

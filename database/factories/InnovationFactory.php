@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PachNotes>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Innovation>
  */
-class PachNotesFactory extends Factory
+class InnovationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class PachNotesFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'explanation' => fake()->text,
+            'link' => fake()->imageUrl
         ];
     }
 }

@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pach_notes', function (Blueprint $table) {
-            $table->id();
+        Schema::create('innovations', function (Blueprint $table) {
+            $table->id('innovations_id')->autoIncrement();
+            $table->string('explanation');
+            $table->string('link');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pach_notes');
+        Schema::dropIfExists('innovations');
     }
 };

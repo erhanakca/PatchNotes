@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class PachNotesController extends Controller
+class PatchNotesController extends Controller
 {
     public function index()
     {
