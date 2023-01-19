@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\PatchNote;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<PatchNote>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PatchNote>
  */
 class PatchNoteFactory extends Factory
 {
@@ -18,9 +17,9 @@ class PatchNoteFactory extends Factory
     public function definition()
     {
         return [
-            'bug_id' => rand(1, 10),
-            'innovation_id' => rand(1, 10),
-            'tag_id' => rand(1, 10),
+            'type' => rand(0,1),
+            'text' => fake()->text,
+            'date' => fake()->date,
         ];
     }
 }

@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Innovation extends Model
+class PatchNoteLink extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $primaryKey = 'innovation_id';
-    protected $table = 'innovations';
+    protected $primaryKey = 'patch_note_link_id';
+    protected $table = 'patch_note_links';
 
     protected $fillable = [
-        'explanation'
+        'patch_note_id',
+        'link'
     ];
 
     protected $dates = [
@@ -29,8 +30,4 @@ class Innovation extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function patchNote()
-    {
-        return $this->hasMany(Innovation::class, 'innovation_id', 'innovation_id');
-    }
 }

@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\PatchNotesController;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Bug extends Model
+class PatchNoteTags extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $primaryKey = 'bug_id';
-    protected $table = 'bugs';
+    protected $primaryKey = 'patch_note_tag_id';
+    protected $table = 'patch_note_tags';
 
     protected $fillable = [
-        'explanation'
+        'patch_note_id',
+        'tag_id'
     ];
 
     protected $dates = [
@@ -29,10 +29,4 @@ class Bug extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
-
-    public function patchNotes()
-    {
-        return $this->hasMany(Bug::class,'bug_id', 'bug_id');
-    }
-
 }

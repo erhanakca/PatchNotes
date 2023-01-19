@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('innovations', function (Blueprint $table) {
-            $table->id('innovations_id')->autoIncrement();
-            $table->string('explanation');
-            $table->string('link');
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id('tag_id')->autoIncrement();
+            $table->string('name');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('innovations');
+        Schema::dropIfExists('tags');
     }
 };

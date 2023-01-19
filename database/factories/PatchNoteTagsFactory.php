@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Bug>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PatchNoteTags>
  */
-class BugFactory extends Factory
+class PatchNoteTagsFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,8 @@ class BugFactory extends Factory
     public function definition()
     {
         return [
-            'explanation' => fake()->text,
-            'link' => fake()->imageUrl
+            'patch_note_id' => rand(1,10),
+            'tag_id' => rand(1,10)
         ];
     }
 }

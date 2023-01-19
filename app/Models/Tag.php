@@ -15,8 +15,7 @@ class Tag extends Model
     protected $table = 'tags';
 
     protected $fillable = [
-        'name',
-        'link'
+        'name'
     ];
 
     protected $dates = [
@@ -28,10 +27,5 @@ class Tag extends Model
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
-    }
-
-    public function patchNote()
-    {
-        return $this->hasMany(Tag::class, 'tag_id', 'tag_id');
     }
 }

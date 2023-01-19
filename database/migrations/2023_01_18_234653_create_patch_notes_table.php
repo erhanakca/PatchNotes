@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tags', function (Blueprint $table) {
-            $table->id('tag_id')->autoIncrement();
-            $table->string('name');
-            $table->string('link');
+        Schema::create('patch_notes', function (Blueprint $table) {
+            $table->id('patch_note_id')->autoIncrement();
+            $table->integer('type');
+            $table->text('text');
+            $table->date('date');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tags');
+        Schema::dropIfExists('patch_notes');
     }
 };

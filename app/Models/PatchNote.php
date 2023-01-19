@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PatchNote extends Model
@@ -15,9 +18,9 @@ class PatchNote extends Model
     protected $table = 'patch_notes';
 
     protected $fillable = [
-        'bug_id',
-        'innovation_id',
-        'tag_id'
+        'type',
+        'text',
+        'date'
     ];
 
     protected $dates = [
@@ -31,18 +34,14 @@ class PatchNote extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function bug()
+    public function patchNoteTag(): HasManyThrough
     {
-        return $this->hasOne(Bug::class, 'bug_id', 'bug_id');
+        return $this->hasManyThrough(PatchNote::class, PatchNoteTags::class, 'patch_note_id', 'tag_id', 'patch_note_id');
     }
 
-    public function innovation()
+    public function patchNoteLink()
     {
-        return $this->hasOne(Innovation::class, 'innovation_id', 'innovation_id');
+        return $this->hasMany(PatchNoteLink::class, 'patch_note_id', 'patch_note_id');
     }
 
-    public function tag()
-    {
-        return $this->hasOne(Tag::class, 'tag_id', 'tag_id');
-    }
 }
