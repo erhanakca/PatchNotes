@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +20,7 @@ class PatchNoteFactory extends Factory
         return [
             'type' => rand(0,1),
             'text' => fake()->text,
-            'date' => fake()->date,
+            'date' => fake()->date()
         ];
     }
 }

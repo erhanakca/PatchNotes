@@ -7,5 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'patchNotes'
 ], function (){
-Route::get('/home', [PatchNotesController::class, 'index'])->name('index');
+Route::get('/index', [PatchNotesController::class, 'index'])->name('index');
 });
+

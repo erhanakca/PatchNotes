@@ -11,8 +11,8 @@ class PatchNotesController extends Controller
 {
     public function index()
     {
-        $data = Tag::all();
-        return view('/home', ['data' => $data]);
+        $tag = Tag::all();
 
+        return view('/index', ['tag' => $tag]);
     }
 }
