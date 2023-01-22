@@ -16,6 +16,8 @@ class PatchNote extends Model
 
     protected $primaryKey = 'patch_note_id';
     protected $table = 'patch_notes';
+    public $timestamps = false;
+
 
     protected $fillable = [
         'type',
