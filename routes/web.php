@@ -8,6 +8,6 @@ Route::group([
     'prefix' => 'patchNotes'
 ], function (){
 Route::get('/index', [PatchNotesController::class, 'index'])->name('index');
-Route::post('/filter', [PatchNotesController::class, 'filter'])->name('filter');
+Route::get('/filter/', [PatchNotesController::class, 'dateFilter'])->name('dateFilter');
 });
 

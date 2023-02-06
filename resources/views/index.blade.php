@@ -11,54 +11,57 @@
             </div>
         </nav>
     <!--...............................................................................................-->
-    <!--SOL COLON-->
+    <!--SOL KOLON-->
         <div class="row mt-5 m-sm-3">
             <div class='col-sm-3'>
-                <footer class="text-body-secondary mb-3">Pick Release Date</footer>
+                <p class="text-body-secondary mb-3">Pick Release Date</p>
                 <hr class="mb-5">
                 <div class="form-group">
-                    <form action="{{route('filter')}}" method="POST">
-                        @csrf
+                    <form type="date" action="{{route('dateFilter')}}" method="GET">
+
                     <div class='input-group date mb-3'>
-                        <input type="date" name="date" class="form-control" placeholder="dd.mm.yyyy" />
+                        <input type="date" name="date" class="form-control"/>
                     </div>
                         <button type="submit" class="btn btn-primary">Filter</button>
                         <button type="reset" class="btn btn-success">Reset All Filters</button>
                     </form>
                 </div>
                 <div class='mb-3'>
-                    <footer class="text-body-secondary "><br>Tags</footer>
+                    <p class="text-body-secondary "><br>Tags</p>
                     <hr class="">
                     @foreach($tag as $item)
-                    <button type="submit" class="btn btn-outline-danger bi-tags">  {{$item['name']}}</button>
+                    <button type="submit" class="btn btn-outline-primary bi-tags mb-1">  {{$item['name']}}</button>
                     @endforeach
                 </div>
             </div>
 
-     <!--SAĞ COLON-->
+     <!--SAĞ KOLON-->
             <div class='col-sm-9'>
-                <footer  style="color: gray; font-size: 40px">Release Notes</footer>
+                <p  style="color: gray; font-size: 40px">Release Notes</p>
                 <h6 class="text-body-secondary mb-3">This patch note does not belong to any institution.</h6>
                 <hr>
-                    <p class="alert alert-primary fs-4 d-md-flex">{{session('date')}}</p>
+                    <p class="alert alert-primary fs-4 d-md-flex"></p>
                     @foreach($patch_note as $item)
-                    @if($item['type'] == 1)
-                    <p class="fs-5 text-danger">Bugfix</p>
-                    <p class="fs-7">{{$item['text']}}</p>
-                    <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp;&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
-                    <br>
-                    <br>
+                    @if($item->type == 1)
+                        <div class="bg-light p-3 rounded mb-2" style="">
+                            <p class="fs-5 text-danger">Bugfix</p>
+                            <p class="fs-7">{{$item->text}}</p>
+                            <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
+                            <br>
+                            <br>
+                        </div>
                     @endif
                     @endforeach
 
-                    <p class="alert alert-primary fs-4 ">{{session('date')}}</p>
                     @foreach($patch_note as $item)
-                    @if($item['type'] == 0)
-                    <p class="fs-5 text-primary">New</p>
-                    <p class="fs-7">{{$item['text']}}</p>
-                    <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp;&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
-                    <br>
-                    <br>
+                    @if($item->type == 0)
+                        <div class="bg-light p-3 rounded mb-2" style="">
+                            <p class="fs-5 text-primary">New</p>
+                            <p class="fs-7">{{$item->text}}</p>
+                            <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
+                            <br>
+                            <br>
+                        </div>
                     @endif
                     @endforeach
             </div>
