@@ -20,7 +20,7 @@ class PatchNoteFactory extends Factory
         return [
             'type' => rand(0,1),
             'text' => fake()->text,
-            'date' => fake()->date()
+            'date' => fake()->dateTimeBetween('-365 hour', '+600 day' )->format('Y-m-d')
         ];
     }
 }

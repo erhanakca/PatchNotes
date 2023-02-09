@@ -28,4 +28,9 @@ class Tag extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function tags()
+    {
+        return $this->belongsTo(Tag::class, 'tag_id', 'tag_id');
+    }
 }

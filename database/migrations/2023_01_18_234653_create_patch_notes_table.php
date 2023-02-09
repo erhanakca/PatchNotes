@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id('patch_note_id')->autoIncrement();
             $table->integer('type');
             $table->text('text');
-            $table->date('date');
+            $table->date('date')->format('Y-m-d');
             $table->timestamps();
             $table->softDeletes();
         });

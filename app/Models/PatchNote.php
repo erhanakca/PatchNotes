@@ -16,8 +16,6 @@ class PatchNote extends Model
 
     protected $primaryKey = 'patch_note_id';
     protected $table = 'patch_notes';
-    public $timestamps = false;
-
 
     protected $fillable = [
         'type',
@@ -28,15 +26,22 @@ class PatchNote extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'date'
     ];
 
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d');
+    }
 
 
-    public function patchNoteTag(): HasManyThrough
+
+    public function patchNoteTags(): HasManyThrough
     {
         return $this->hasManyThrough(PatchNote::class, PatchNoteTags::class, 'patch_note_id', 'tag_id', 'patch_note_id');
     }
+
 
     public function patchNoteLink()
     {
