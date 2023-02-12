@@ -5,7 +5,7 @@
     <nav class="navbar bg-body m-sm-3" xmlns="http://www.w3.org/1999/html">
             <div class="container-fluid">
                 <a class="navbar-brand text-body-secondary text-body-emphasis"><i class="bi bi-journals m-lg-2"></i>Patch Notes</a>
-                <form class="d-flex" method="POST" action="{{route('create')}}">
+                <form class="d-flex" method="POST" id="create_form" action="{{route('create')}}">
                     @csrf
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#patchNoteModal">
@@ -22,7 +22,7 @@
                                     <!--.....................................-->
                                     <p class="">Patch Note Type </p>
                                     <select class="form-select mb-4" name="type">
-                                        <option>BUG_FİX</option>
+                                        <option>BUG_FIX</option>
                                         <option>NEW_PATCH</option>
                                     </select>
                                     <!--.....................................-->
@@ -36,13 +36,13 @@
                                     <textarea class="form-control mb-4" name="link"></textarea>
                                     <!--.....................................-->
                                     <p>Tags </p>
-                                    <input class="form-control mb-4" name="tag">
+                                    <input class="form-control mb-4" name="tag" id="tagInput">
                                     @foreach($tag as $item)
-                                        <button class="btn btn-outline-primary bi-tags mb-1">  {{$item['name']}}</button>
+                                        <button class="btn btn-outline-primary bi-tags mb-1" onclick="addTag(this)">  {{$item['name']}}</button>
                                     @endforeach
                                     <!--.....................................-->
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-danger" form="create_form" data-bs-dismiss="modal">Close</button>
                                             <button type="submit" class="btn btn-success">Save Patch Note</button>
                                         </div>
                                 </div>
@@ -67,22 +67,19 @@
                         <button type="reset" class="btn btn-success">Reset All Filters</button>
                     </form>
                 </div>
-                <div class='mb-3'>
-                    <p class="text-body-secondary "><br>Tags</p>
-                    <hr>
-                    <form action="{{route('tagFilter')}}" method="POST">
-                        @csrf
-                        @foreach($tag as $item)
-                        <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="tags[]" value="{{ $item['name'] }}">
-                                    <label type="button" class="form-check-label" for="{{ $item['name'] }}">{{ $item['name'] }}</label>
-                                </div>
-                        </div>
-                        @endforeach
-                        <button type="submit" class="btn btn-primary mt-2">Filter</button>
+
+                <p class="text-body-secondary "><br>Tags</p>
+                <hr>
+                    <form  action="{{route('tagFilter')}}" method="POST" id="tagFilterForm">
+                    @csrf
+                    @foreach($tag as $item)
+                        <button class="btn btn-outline-primary bi-tags mb-1">  {{$item['name']}}</button>
+                    @endforeach
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-primary" form="tagFilterForm">Filter</button>
+                        <button type="reset" class="btn btn-success">Reset All Filters</button>
+                    </div>
                     </form>
-                </div>
             </div>
      <!--SAĞ KOLON-->
             <div class='col-sm-9'>
@@ -103,9 +100,11 @@
                         <div class="bg-light p-3 rounded mb-2" style="">
                             <p class="fs-5 text-danger">Bugfix</p>
                             <p class="fs-7">{{$item->text}}</p>
-                            <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
+                            @foreach($item->links as $link)
+                            <a href="{{$link->url}}" class="btn bi bi-box-arrow-up-right text-info"> {{$link->link}}</a>
                             <br>
                             <br>
+                            @endforeach
                         </div>
                     @endif
                 @endforeach
@@ -124,7 +123,7 @@
                         <div class="bg-light p-3 rounded mb-2" style="">
                             <p class="fs-5 text-primary">New</p>
                             <p class="fs-7">{{$item->text}}</p>
-                            <a href="" class="btn bi bi-box-arrow-up-right text-info">&nbsp; https://getbootstrap.com/docs/5.3/utilities/text/#font-size</a>
+                            <a href="" class="btn bi bi-box-arrow-up-right text-info"></a>
                             <br>
                             <br>
                         </div>
@@ -134,4 +133,46 @@
             </div>
         </div>
     <!--...............................................................................................-->
+
+    <script>
+        //TODO: CREATE İŞLEMİ MODAL İÇERİSİ...
+
+        // todo: burada seçtiğim tagların başına '#' işareti koyup arasında boşluk bırakmıyorum
+        // todo: bir sonraki tag seçildiğinde ise diğeriyle arasına boşluk bırakıyorum.
+        function addTag(element) {
+            let tagInput = document.getElementById("tagInput");
+            let currentValue = tagInput.value;
+            if (currentValue.length > 0) {
+                tagInput.value = currentValue + " " + "#" + element.innerText.trim();
+            } else {
+                tagInput.value = "#" + element.innerText.trim();
+            }
+        }
+
+        //todo: kullanıcı her tag girdiğinde başına '#' işareti koyup boşluk bırakacak.
+        document.getElementById("tagInput").addEventListener("keyup", function(event) {
+            let currentValue = this.value;
+            if (event.code === "Space" && currentValue.slice(-1) !== "#") {
+                this.value = currentValue + "#";
+            }
+        });
+
+        //todo: bu kodu yazmamın sebebi ise tagı tıkladığım anda create rotasına gidiyordu bu kod ile engelledik
+        document.querySelector("create_form").addEventListener("submit", function(event) {
+            event.preventDefault();});
+
+        //todo: burada engellenen submit butonunu bu kod ile aktif hale getirdik.
+        document.querySelector("create_form[type='submit']").addEventListener("click", function() {
+            document.querySelector("create_form").submit();
+        });
+
+        //TODO: İNDEX ANASAYFAMIZDA Kİ TAGLARIN KONTROLÜ
+
+        document.querySelector("#tagFilterForm").addEventListener("submit", function(event) {
+            event.preventDefault();});
+
+
+
+    </script>
+
 @endsection

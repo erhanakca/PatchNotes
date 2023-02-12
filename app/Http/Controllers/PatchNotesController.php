@@ -9,6 +9,7 @@ use App\Http\Repositories\Eloquent\PatchNoteTagRepository;
 use App\Http\Repositories\Eloquent\TagRepository;
 use App\Http\Requests\PatchNoteRequest;
 use App\Models\PatchNote;
+use App\Models\PatchNoteLink;
 use App\Models\PatchNoteTags;
 use App\Models\Tag;
 use Exception;
@@ -40,37 +41,53 @@ class PatchNotesController extends Controller
 
     public function index()
     {
-        $tag = Tag::all();
-        $patch_note = PatchNote::whereIn('type', [0,1])
-            ->orderBy('date', 'desc')
-            ->get();
+        try {
+            $tag = Tag::all();
+            $patch_note = PatchNote::whereIn('type', [0,1])
+                ->orderBy('date', 'desc')
+                ->get();
+            foreach ($patch_note as $item){
+                $patch_note_id = $item->patch_note_id;
+                $patch_note_link = PatchNoteLink::where('patch_note_id', $patch_note_id)->get();
+                $item->links = $patch_note_link;
+            }
+        }catch (\Exception $e){
+            return response(['success' => false, 'error' => $e->getMessage()]);
+        }
 
-
-        return view('/index', ['tag' => $tag], ['patch_note' => $patch_note]);
+        return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
     }
 
     public function dateFilter()
     {
-        $tag = Tag::all();
-        $patch_note = PatchNote::whereIn('type', [0,1])
-            ->where('date', '=', $_GET)
-            ->orderBy('date', 'desc')
-            ->get();
+        try {
+            $tag = Tag::all();
+            $patch_note = PatchNote::whereIn('type', [0,1])
+                ->where('date', '=', $_GET)
+                ->orderBy('date', 'desc')
+                ->get();
+        }catch (\Exception $e){
+            return response(['success' => false, 'error' => $e->getMessage()]);
+        }
 
-        return view('/index', ['tag' => $tag], ['patch_note' => $patch_note]);
+        return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
     }
 
     // TODO: henüz bitmedi yapılacak.
     public function tagFilter()
     {
-        $tagNames = request('tags', []);
-        $tagIds = Tag::whereIn('name', $tagNames)->pluck('tag_id');
+        try {
+            $tagNames = request('tags', []);
+            $tagIds = Tag::whereIn('name', $tagNames)->pluck('tag_id');
 
-        $data = PatchNote::whereHas('patchNoteTags', function($query) use($tagIds) {
-            $query->whereIn('tag_id', $tagIds);
-        })->with(['patch_note_tags', 'tags'])
-            ->orderBy('date', 'desc')
-            ->get();
+            $data = PatchNote::whereHas('patchNoteTags', function($query) use($tagIds) {
+                $query->whereIn('tag_id', $tagIds);
+            })->with(['patch_note_tags', 'tags'])
+                ->orderBy('date', 'desc')
+                ->get();
+        }catch (\Exception $e){
+            return response(['success' => false, 'error' => $e->getMessage()]);
+        }
 
         return view('/index', ['patch_note' => $data]);
     }
@@ -82,6 +99,7 @@ class PatchNotesController extends Controller
             $type = match ($data['type']) {
                 'NEW_PATCH' => PatchNotesConstant::NEW_PATCH,
                 'BUG_FIX' => PatchNotesConstant::BUG_FIX,
+                default => "Unknown Type"
             };
             $patchNote = $this->patchNoteRepository->create([
                 'type' => $type,
@@ -89,18 +107,22 @@ class PatchNotesController extends Controller
                 'date' => $data['date']
             ]);
 
-            $this->patchNoteLinkRepository->create([
-                'patch_note_id' => $patchNote['patch_note_id'],
-                'link' => $data['link']
-            ]);
+            $links = explode(' ', $data['link']);
+            foreach ($links as $link){
+                $this->patchNoteLinkRepository->create([
+                    'patch_note_id' => $patchNote['patch_note_id'],
+                    'link' => $link
+                ]);
+            }
 
-            $tags = explode(',', $data['tag']);
+            $tags = explode(' ', $data['tag']);
             foreach ($tags as $tag){
+                $tag = str_replace("#", "", $tag);
                 $existingTag = $this->tagRepository->findByName($tag);
                 if ($existingTag){
                     $this->patchNoteTagRepository->create([
                         'patch_note_id' => $patchNote['patch_note_id'],
-                        'tag_id' => $existingTag->id
+                        'tag_id' => $existingTag['tag_id']
                     ]);
                 } else {
                     $newTag = $this->tagRepository->create([
@@ -114,7 +136,7 @@ class PatchNotesController extends Controller
             }
             return redirect(route('index'));
         }catch (\Exception $e){
-            return response(['success' => false, 'error' => $e->getMessage()], 404,);
+            return response(['success' => false, 'error' => $e->getMessage()]);
         }
     }
 
@@ -122,26 +144,5 @@ class PatchNotesController extends Controller
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

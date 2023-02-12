@@ -30,4 +30,11 @@ class PatchNoteLink extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function patchNote()
+    {
+        return $this->hasMany(PatchNoteLink::class, 'patch_note_id', 'patch_note_id');
+    }
+
+
+
 }
