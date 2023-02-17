@@ -45,11 +45,19 @@ class PatchNotesController extends Controller
             $tag = Tag::all();
             $patch_note = PatchNote::whereIn('type', [0,1])
                 ->orderBy('date', 'desc')
+                ->with('patchNoteTags')
                 ->get();
             foreach ($patch_note as $item){
                 $patch_note_id = $item->patch_note_id;
                 $patch_note_link = PatchNoteLink::where('patch_note_id', $patch_note_id)->get();
                 $item->links = $patch_note_link;
+
+                $tags = $item->patchNoteTags;
+                $tag_names = [];
+                foreach ($tags as $patch_note_tags) {
+                    $tag_names[] = $patch_note_tags->name;
+                }
+                $item->tags = $tag_names;
             }
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
@@ -62,8 +70,7 @@ class PatchNotesController extends Controller
     {
         try {
             $tag = Tag::all();
-            $patch_note = PatchNote::whereIn('type', [0,1])
-                ->where('date', '=', $_GET)
+            $patch_note = PatchNote::where('date', '=', $_GET)
                 ->orderBy('date', 'desc')
                 ->get();
         }catch (\Exception $e){
@@ -77,14 +84,17 @@ class PatchNotesController extends Controller
     public function tagFilter()
     {
         try {
-            $tagNames = request('tags', []);
+            $tagNames = explode(' ', request('tags'));
             $tagIds = Tag::whereIn('name', $tagNames)->pluck('tag_id');
 
-            $data = PatchNote::whereHas('patchNoteTags', function($query) use($tagIds) {
-                $query->whereIn('tag_id', $tagIds);
-            })->with(['patch_note_tags', 'tags'])
+            $data = PatchNote::with('patchNoteTags')
+                ->whereHas('patchNoteTags', function ($q) use ($tagIds){
+                    $q->whereIn('patch_note_tags.tag_id', $tagIds);
+                })
+
                 ->orderBy('date', 'desc')
                 ->get();
+
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
@@ -136,6 +146,58 @@ class PatchNotesController extends Controller
             }
             return redirect(route('index'));
         }catch (\Exception $e){
+            return response(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function update(PatchNoteRequest $patchNoteRequest, $id)
+    {
+        try {
+            $patch_note_id = $this->patchNoteRepository->find($id);
+            $data = $patchNoteRequest->validated();
+            $type = match ($data['type']){
+                'NEW_PATCH' => PatchNotesConstant::NEW_PATCH,
+                'BUG_FIX' => PatchNotesConstant::BUG_FIX,
+                default => "Unknown Type"
+            };
+
+           $patch_note = $this->patchNoteRepository->update($id, [
+               'type' => $type,
+               'text' => $data['text'],
+               'date' => $data['date']
+           ]);
+
+           $patch_note_id->patchNoteLink()->delete();
+
+
+           if (!empty($data['link'])) {
+               $create = explode(' ', $data['link']);
+               foreach ($create as $link) {
+                   $this->patchNoteLinkRepository->create([
+                       'patch_note_id' => $patch_note['patch_note_id'],
+                       'link' => $link
+                   ]);
+               }
+           }else{
+               return redirect(route('index'));
+           }
+
+            return redirect(route('index'));
+
+        }catch (\Exception $e){
+            return response(['success' => false, 'error' => $e->getMessage()]);
+        }
+
+    }
+
+    public function delete($id)
+    {
+        try {
+            $patch_note = PatchNote::with('patchNoteLink')->find($id);
+            $patch_note->patchNoteLink()->delete();
+            $patch_note->delete();
+            return redirect(route('index'));
+        }catch (\Exception $e) {
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
     }

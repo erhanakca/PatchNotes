@@ -17,4 +17,9 @@ class PatchNoteLinkRepository extends BaseRepository
     {
         return Model::all();
     }
+
+    public function findById($id)
+    {
+        return $this->model->where('patch_note_link_id', $id)->get();
+    }
 }

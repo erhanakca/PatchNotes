@@ -39,7 +39,13 @@ class PatchNote extends Model
 
     public function patchNoteTags(): HasManyThrough
     {
-        return $this->hasManyThrough(PatchNote::class, PatchNoteTags::class, 'patch_note_id', 'tag_id', 'patch_note_id');
+        return $this->hasManyThrough(
+            Tag::class,
+            PatchNoteTags::class,
+            'patch_note_id',
+            'tag_id',
+            'patch_note_id',
+            'tag_id');
     }
 
 

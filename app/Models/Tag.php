@@ -31,6 +31,6 @@ class Tag extends Model
 
     public function tags()
     {
-        return $this->belongsTo(Tag::class, 'tag_id', 'tag_id');
+        return $this->hasMany(PatchNoteTags::class, 'tag_id', 'tag_id');
     }
 }
