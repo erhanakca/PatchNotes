@@ -43,7 +43,7 @@
                                     <!--.....................................-->
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-danger" form="create_form" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-success">Save Patch Note</button>
+                                            <button type="submit" class="btn btn-success" onclick="submitForm()" >Save Patch Note</button>
                                         </div>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
                                                     <!--.....................................-->
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-success" id="savePatchNote">Save Patch Note</button>
+                                                        <button type="submit" class="btn btn-success">Save Patch Note</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -250,7 +250,7 @@
 
 
 
-        // TODO: CREATE İŞLEMİ MODAL İÇERİSİ...
+
 
         // todo: burada seçtiğim tagların başına '#' işareti koyup arasında boşluk bırakmıyorum
         // todo: bir sonraki tag seçildiğinde ise diğeriyle arasına boşluk bırakıyorum.
@@ -280,6 +280,11 @@
         document.querySelector("#create_form[type='submit']").addEventListener("click", function() {
             document.querySelector("#create_form").submit();
         });
+
+        function submitForm() {
+            document.querySelector("#create_form").submit();
+        }
+
 
     </script>
 @endsection

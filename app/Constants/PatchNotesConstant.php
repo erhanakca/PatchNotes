@@ -4,6 +4,6 @@ namespace App\Constants;
 
 class PatchNotesConstant
 {
-    const NEW_PATCH = 1;
-    const BUG_FIX = 0;
+    const NEW_PATCH = 0;
+    const BUG_FIX = 1;
 }

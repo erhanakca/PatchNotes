@@ -107,8 +107,8 @@ class PatchNotesController extends Controller
         try {
             $data = $patchNoteRequest->validated();
             $type = match ($data['type']) {
-                'NEW_PATCH' => PatchNotesConstant::NEW_PATCH,
                 'BUG_FIX' => PatchNotesConstant::BUG_FIX,
+                'NEW_PATCH' => PatchNotesConstant::NEW_PATCH,
                 default => "Unknown Type"
             };
             $patchNote = $this->patchNoteRepository->create([
