@@ -69,18 +69,19 @@
                 </div>
                 <p class="text-body-secondary mt-3"><br>Filter By Tags</p>
                 <hr>
-                    <form  action="{{route('tagFilter')}}" method="POST" id="tagFilterForm">
+                @foreach($tag as $item)
+                    <button style="background-color: lightblue"  class="btn btn-outline-primary bi-tags mb-1"> {{$item['name']}}</button>
+                @endforeach
+
+                <form action="{{route('tagFilter')}}" method="POST" id="tagFilterForm">
                     @csrf
                     @method('GET')
-                    @foreach($tag as $item)
-                        <button style="background-color: lightblue" class="btn btn-outline-primary bi-tags mb-1"> {{$item['name']}}</button>
-                    @endforeach
-                        <textarea type="text" name="tags" class="form-control mb-4 mt-5"></textarea>
+                    <input type="text" name="tags" class="form-control mb-4 mt-5" id="tagFilterInput">
                     <div class="form-group mt-3">
-                        <button type="submit" class="btn btn-primary" form="tagFilterForm">Filter</button>
+                        <button type="submit" class="btn btn-primary" id="chosenOnes">Filter</button>
                         <button type="reset" class="btn btn-success">Reset All Filters</button>
                     </div>
-                    </form>
+                </form>
             </div>
      <!--SAĞ KOLON-->
             <div class='col-sm-9'>
@@ -101,19 +102,24 @@
                             <p class="fs-7">{{$item->text}}</p>
                             @foreach($item->links as $link)
                             <a href="{{$link->url}}" class="btn bi bi-box-arrow-up-right text-info"> {{$link->link}}</a>
+                            <br>
                             @endforeach
                             <br>
                             <br>
+                            @php $control = array(); @endphp
                             @foreach($item->patchNoteTags as $tags)
+                                @if(!in_array($tags['name'], $control))
                             <button style="background-color: lightblue" class="btn btn-outline-primary bi-tags mb-1" disabled> {{$tags['name']}}</button>
+                                @php $control[] = $tags['name']; @endphp
+                                @endif
                             @endforeach
                             <br>
                             <br>
                             <div class="d-flex justify-content-end align-items-center mt-2">
-                                <form action="{{route('update', $item->patch_note_id)}}" method="POST" class="d-inline">
+                                <form action="{{route('update', $item->patch_note_id)}}" id="update_form" method="POST" class="d-inline">
                                     @csrf
                                     @method('PUT')
-                                    <button style="font-size: 20px" type="button" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $link->patch_note_link_id}}"></button>
+                                    <button style="font-size: 20px" type="button" id="update_form" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $link->patch_note_link_id}}"></button>
                                     <div class="modal fade" id="updateModal{{$item->patch_note_id, $link->patch_note_link_id}}" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -139,14 +145,15 @@
                                                     <textarea class="form-control mb-4" name="link">{{implode("\n", $item->links->pluck('link')->toArray())}}</textarea>
                                                     <!--.....................................-->
                                                     <p>Tags </p>
-                                                    <input class="form-control mb-4" name="tag" id="tagInput">
+                                                    <input class="form-control mb-4" name="tag" id="updateTag" value="{{$item->patchNoteTags->pluck('name')->map(function($tag) { return '#' . $tag; })->implode(', ')}}">
+
                                                     @foreach($tag as $items)
-                                                        <button class="btn btn-outline-primary bi-tags mb-1" onclick="addTag(this)">  {{$items['name']}}</button>
+                                                        <button class="btn btn-outline-primary bi-tags mb-1" onclick="update(this)">  {{$items['name']}}</button>
                                                     @endforeach
                                                     <!--.....................................-->
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-success" id="savePatchNote">Save Patch Note</button>
+                                                        <button type="button" class="btn btn-danger" form="update_form" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-success" onclick="updateForm()">Save Patch Note</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -241,19 +248,10 @@
         </div>
     <!--...............................................................................................-->
     <script>
-        // TODO: İNDEX ANASAYFAMIZDA Kİ TAGLARIN KONTROLÜ
 
-
-
-
-
-
-
-
-
-
-        // todo: burada seçtiğim tagların başına '#' işareti koyup arasında boşluk bırakmıyorum
-        // todo: bir sonraki tag seçildiğinde ise diğeriyle arasına boşluk bırakıyorum.
+        //TODO:CREATE İŞLEMİ
+        //  burada seçtiğim tagların başına '#' işareti koyup arasında boşluk bırakmıyorum
+        //  bir sonraki tag seçildiğinde ise diğeriyle arasına boşluk bırakıyorum.
         function addTag(element) {
             let tagInput = document.getElementById("tagInput");
             let currentValue = tagInput.value;
@@ -263,27 +261,35 @@
                 tagInput.value = "#" + element.innerText.trim();
             }
         }
-
-        // todo: kullanıcı her tag girdiğinde başına '#' işareti koyup boşluk bırakacak.
+        //  kullanıcı her space bastığında  '#' işareti koyup boşluk bırakacak.
         document.getElementById("tagInput").addEventListener("keyup", function(event) {
             let currentValue = this.value;
             if (event.code === "Space" && currentValue.slice(-1) !== "#") {
                 this.value = currentValue + "#";
             }
         });
-
-        // todo: bu kodu yazmamın sebebi ise tagı tıkladığım anda create rotasına gidiyordu bu kod ile engelledik
+        //  bu kodu yazmamın sebebi ise tagı tıkladığım anda create rotasına gidiyordu bu kod ile engelledik
         document.querySelector("#create_form").addEventListener("submit", function(event) {
-            event.preventDefault();});
-
-        // todo: burada engellenen submit butonunu bu kod ile aktif hale getirdik.
+            event.preventDefault();
+        });
+        //  burada engellenen submit butonunu bu kod ile aktif hale getirdik.
         document.querySelector("#create_form[type='submit']").addEventListener("click", function() {
             document.querySelector("#create_form").submit();
         });
-
         function submitForm() {
             document.querySelector("#create_form").submit();
         }
+
+        // TODO: İNDEX ANASAYFAMIZDA Kİ TAGLARIN KONTROLÜ
+
+
+
+
+
+        //TODO:İNDEX SAYFASI TAG FİLTRELEME İŞLEMİ
+        // tagları filtrelemek için mevcut tag tıklandığında input içerisine alıyor
+
+
 
 
     </script>

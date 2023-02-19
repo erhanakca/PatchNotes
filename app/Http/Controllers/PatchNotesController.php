@@ -84,22 +84,33 @@ class PatchNotesController extends Controller
     public function tagFilter()
     {
         try {
-            $tagNames = explode(' ', request('tags'));
-            $tagIds = Tag::whereIn('name', $tagNames)->pluck('tag_id');
-
-            $data = PatchNote::with('patchNoteTags')
-                ->whereHas('patchNoteTags', function ($q) use ($tagIds){
-                    $q->whereIn('patch_note_tags.tag_id', $tagIds);
-                })
-
+            $tag = Tag::all();
+            $selected_tags = explode(' ', request('tags'));
+            $patch_note = [];
+            $patch = PatchNote::whereIn('type', [0,1])
                 ->orderBy('date', 'desc')
+                ->with('patchNoteTags')
                 ->get();
+            foreach ($patch as $item){
+                $tags = $item->patchNoteTags;
+                $tag_names = [];
+                foreach ($tags as $patch_note_tags) {
+                    $tag_names[] = $patch_note_tags->name;
+                }
+                if (empty($selected_tags) || count(array_intersect($selected_tags, $tag_names)) > 0) {
+                    $patch_note_id = $item->patch_note_id;
+                    $patch_note_link = PatchNoteLink::where('patch_note_id', $patch_note_id)->get();
+                    $item->links = $patch_note_link;
+                    $item->tags = $tag_names;
+                    $patch_note[] = $item;
+                }
+            }
+            return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
 
-        return view('/index', ['patch_note' => $data]);
     }
 
     public function create(PatchNoteRequest $patchNoteRequest)
