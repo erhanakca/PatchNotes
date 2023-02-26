@@ -10,16 +10,8 @@ use App\Http\Repositories\Eloquent\TagRepository;
 use App\Http\Requests\PatchNoteRequest;
 use App\Models\PatchNote;
 use App\Models\PatchNoteLink;
-use App\Models\PatchNoteTags;
 use App\Models\Tag;
-use Exception;
-use Faker\Provider\ka_GE\Text;
-use Illuminate\Database\RecordsNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use PHPUnit\TextUI\XmlConfiguration\Constant;
 
 class PatchNotesController extends Controller
 {
@@ -43,27 +35,17 @@ class PatchNotesController extends Controller
     {
         try {
             $tag = Tag::all();
-            $patch_note = PatchNote::whereIn('type', [0,1])
+            $patch_note = PatchNote::orderBy('type', 'desc')
                 ->orderBy('date', 'desc')
-                ->with('patchNoteTags')
+                ->with('PatchNoteTags')
+                ->with('PatchNoteLink')
                 ->get();
-            foreach ($patch_note as $item){
-                $patch_note_id = $item->patch_note_id;
-                $patch_note_link = PatchNoteLink::where('patch_note_id', $patch_note_id)->get();
-                $item->links = $patch_note_link;
 
-                $tags = $item->patchNoteTags;
-                $tag_names = [];
-                foreach ($tags as $patch_note_tags) {
-                    $tag_names[] = $patch_note_tags->name;
-                }
-                $item->tags = $tag_names;
-            }
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
 
-        return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
+        return view('/index', compact('tag', 'patch_note'));
     }
 
     public function dateFilter()
@@ -72,7 +54,10 @@ class PatchNotesController extends Controller
             $tag = Tag::all();
             $patch_note = PatchNote::where('date', '=', $_GET)
                 ->orderBy('date', 'desc')
+                ->with('patchNoteTags')
+                ->with('PatchNoteLink')
                 ->get();
+
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
@@ -80,7 +65,7 @@ class PatchNotesController extends Controller
         return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
     }
 
-    // TODO: henüz bitmedi yapılacak.
+
     public function tagFilter()
     {
         try {
@@ -212,10 +197,6 @@ class PatchNotesController extends Controller
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
     }
-
-
-
-
 }
 
 

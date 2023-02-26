@@ -4,7 +4,7 @@
     <!--...............................................................................................-->
     <nav class="navbar bg-body m-sm-3" xmlns="http://www.w3.org/1999/html">
             <div class="container-fluid">
-                <a class="navbar-brand text-body-secondary text-body-emphasis"><i class="bi bi-journals m-lg-2"></i>Patch Notes</a>
+                <a href="{{route('index')}}" class="navbar-brand text-body-secondary text-body-emphasis"><i class="bi bi-journals m-lg-2"></i>Patch Notes</a>
                 <form class="d-flex" method="POST" id="create_form" action="{{route('create')}}">
                     @csrf
                     <!-- Button trigger modal -->
@@ -91,19 +91,21 @@
 
                 {{$current_date = null}}
                 @foreach($patch_note as $item)
-                    @if($item->type == 1)
-                        @if($current_date != $item->date->format('d-m-Y'))
-                            <p class="alert alert-primary fs-4 d-md-flex">{{$item->date->format('d-m-Y')}}</p>
-                        @else
-                             {{$current_date = $item->date->format('d-m-Y')}}
+                        @if($item->date != $current_date)
+                            <p class="alert alert-primary fs-4 d-md-flex">{{$current_date = $item->date}}</p>
                         @endif
                         <div class="bg-light p-3 rounded mb-2" style="">
-                            <p class="fs-5 text-danger">Bugfix</p>
+                            @if($item->type == 1)
+                            <p class="fs-5 text-danger">Bug Fix</p>
+                            @else
+                            <p class="fs-5 text-primary">New Patch</p>
+                            @endif
                             <p class="fs-7">{{$item->text}}</p>
-                            @foreach($item->links as $link)
-                            <a href="{{$link->url}}" class="btn bi bi-box-arrow-up-right text-info"> {{$link->link}}</a>
+                            @foreach($item->PatchNoteLink as $links)
+                            <a href="" class="btn bi bi-box-arrow-up-right text-info"> {{$links}}</a>
                             <br>
                             @endforeach
+                            <br>
                             <br>
                             <br>
                             @php $control = array(); @endphp
@@ -119,8 +121,8 @@
                                 <form action="{{route('update', $item->patch_note_id)}}" id="update_form" method="POST" class="d-inline">
                                     @csrf
                                     @method('PUT')
-                                    <button style="font-size: 20px" type="button" id="update_form" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $link->patch_note_link_id}}"></button>
-                                    <div class="modal fade" id="updateModal{{$item->patch_note_id, $link->patch_note_link_id}}" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+                                    <button style="font-size: 20px" type="button" id="update_form" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $item->patch_note_link_id}}"></button>
+                                    <div class="modal fade" id="updateModal{{$item->patch_note_id, $item->patch_note_link_id}}" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -142,7 +144,7 @@
                                                     <input type="date" name="date" class="form-control mb-4" value="{{$item->date->format('d-m-Y')}}">
                                                     <!--.....................................-->
                                                     <p>Attach the Ticket Link </p>
-                                                    <textarea class="form-control mb-4" name="link">{{implode("\n", $item->links->pluck('link')->toArray())}}</textarea>
+                                                    <textarea class="form-control mb-4" name="link"></textarea>
                                                     <!--.....................................-->
                                                     <p>Tags </p>
                                                     <input class="form-control mb-4" name="tag" id="updateTag" value="{{$item->patchNoteTags->pluck('name')->map(function($tag) { return '#' . $tag; })->implode(', ')}}">
@@ -167,82 +169,6 @@
                                 </form>
                             </div>
                         </div>
-                    @endif
-                @endforeach
-
-                {{$current_date = null}}
-                @foreach($patch_note as $item)
-                    @if($item->type == 0)
-                        @if($current_date != $item->date->format('d-m-Y'))
-                            <p class="alert alert-primary fs-4 d-md-flex">{{$item->date->format('d-m-Y')}}</p>
-                        @else
-                            {{$current_date = $item->date->format('d-m-Y')}}
-                        @endif
-                        <div class="bg-light p-3 rounded mb-2" style="">
-                            <p class="fs-5 text-primary">New Patch</p>
-                            <p class="fs-7">{{$item->text}}</p>
-                            @foreach($item->links as $link)
-                                <a href="{{$link->url}}" class="btn bi bi-box-arrow-up-right text-info"> {{$link->link}}</a>
-                            @endforeach
-                            <br>
-                            <br>
-                            @foreach($item->patchNoteTags as $tags)
-                                <button style="background-color: lightblue" class="btn btn-outline-primary bi-tags mb-1" disabled> {{$tags['name']}}</button>
-                            @endforeach
-                            <br>
-                            <br>
-                            <div class="d-flex justify-content-end align-items-center mt-2">
-                                <form action="{{route('update', $item->patch_note_id)}}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('PUT')
-                                    <button style="font-size: 20px" type="button" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $link->patch_note_link_id}}"></button>
-                                    <div class="modal fade" id="updateModal{{$item->patch_note_id, $link->patch_note_link_id}}" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title"><i class="bi bi-journals m-lg-2"></i>Update</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!--.....................................-->
-                                                    <p class="">Patch Note Type </p>
-                                                    <select class="form-select mb-4" name="type">
-                                                        <option >NEW_PATCH</option>
-                                                        <option >BUG_FIX</option>
-                                                    </select>
-                                                    <!--.....................................-->
-                                                    <p>Description </p>
-                                                    <textarea class="form-control mb-4" name="text">{{$item->text}}</textarea>
-                                                    <!--.....................................-->
-                                                    <p>Pick Release Date </p>
-                                                    <input type="date" name="date" class="form-control mb-4">
-                                                    <!--.....................................-->
-                                                    <p>Attach the Ticket Link </p>
-                                                    <textarea class="form-control mb-4" name="link">{{implode("\n", $item->links->pluck('link')->toArray())}}</textarea>
-                                                    <!--.....................................-->
-                                                    <p>Tags </p>
-                                                    <input class="form-control mb-4" name="tag" id="tagInput">
-                                                    @foreach($tag as $items)
-                                                        <button class="btn btn-outline-primary bi-tags mb-1" onclick="addTag(this)">  {{$items['name']}}</button>
-                                                    @endforeach
-                                                    <!--.....................................-->
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-success">Save Patch Note</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                                <form action="{{route('delete', $item->patch_note_id)}}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button style="font-size: 20px" type="submit" class="btn bi bi-trash text-danger"></button>
-                                </form>
-                            </div>
-                        </div>
-                    @endif
                 @endforeach
             </div>
         </div>
