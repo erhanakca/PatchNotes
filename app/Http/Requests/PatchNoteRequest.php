@@ -29,7 +29,7 @@ class PatchNoteRequest extends FormRequest
             'type' => 'required|string',
             'text' => 'required|string',
             'date' => 'required|date',
-            'link' => 'nullable|string|max:50|url',
+            'link' => 'nullable|string',
             'tag' => 'nullable|string'
         ];
     }

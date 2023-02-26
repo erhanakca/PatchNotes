@@ -35,17 +35,25 @@ class PatchNotesController extends Controller
     {
         try {
             $tag = Tag::all();
-            $patch_note = PatchNote::orderBy('type', 'desc')
-                ->orderBy('date', 'desc')
+            $patch_note = PatchNote::orderBy('date', 'desc')
                 ->with('PatchNoteTags')
                 ->with('PatchNoteLink')
+                ->groupBy('patch_note_id', 'date')
                 ->get();
+
+            $date_array = [];
+            foreach ($patch_note as $note){
+                $date = $note->date;
+                if (!in_array($date, $date_array)){
+                    $date_array[] = $date;
+                }
+            }
 
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
 
-        return view('/index', compact('tag', 'patch_note'));
+        return view('/index', compact('tag', 'patch_note', 'date_array'));
     }
 
     public function dateFilter()
@@ -56,13 +64,22 @@ class PatchNotesController extends Controller
                 ->orderBy('date', 'desc')
                 ->with('patchNoteTags')
                 ->with('PatchNoteLink')
+                ->groupBy('patch_note_id', 'date')
                 ->get();
+
+            $date_array = [];
+            foreach ($patch_note as $note){
+                $date = $note->date;
+                if (!in_array($date, $date_array)){
+                    $date_array[] = $date;
+                }
+            }
 
         }catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
         }
 
-        return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
+        return view('/index', compact('tag', 'patch_note', 'date_array'));
     }
 
 
@@ -70,11 +87,11 @@ class PatchNotesController extends Controller
     {
         try {
             $tag = Tag::all();
-            $selected_tags = explode(' ', request('tags'));
+            $selected_tags = explode(' ', str_replace('#', '', request('tag')));
             $patch_note = [];
-            $patch = PatchNote::whereIn('type', [0,1])
-                ->orderBy('date', 'desc')
+            $patch = PatchNote::orderBy('date', 'desc')
                 ->with('patchNoteTags')
+                ->groupBy('patch_note_id', 'date')
                 ->get();
             foreach ($patch as $item){
                 $tags = $item->patchNoteTags;
@@ -90,7 +107,15 @@ class PatchNotesController extends Controller
                     $patch_note[] = $item;
                 }
             }
-            return view('/index', ['tag' => $tag, 'patch_note' => $patch_note]);
+
+            $date_array = [];
+            foreach ($patch_note as $note){
+                $date = $note->date;
+                if (!in_array($date, $date_array)){
+                    $date_array[] = $date;
+                }
+            }
+            return view('/index', compact('tag', 'patch_note', 'date_array'));
 
         } catch (\Exception $e){
             return response(['success' => false, 'error' => $e->getMessage()]);
@@ -198,5 +223,3 @@ class PatchNotesController extends Controller
         }
     }
 }
-
-

@@ -30,7 +30,7 @@
                                     <textarea class="form-control mb-4" name="text"></textarea>
                                     <!--.....................................-->
                                     <p>Pick Release Date </p>
-                                    <input type="date" name="date" class="form-control mb-4">
+                                    <input type="date" name="date" class="form-control mb-4" id="today">
                                     <!--.....................................-->
                                     <p>Attach the Ticket Link </p>
                                     <textarea class="form-control mb-4" name="link"></textarea>
@@ -70,13 +70,13 @@
                 <p class="text-body-secondary mt-3"><br>Filter By Tags</p>
                 <hr>
                 @foreach($tag as $item)
-                    <button style="background-color: lightblue"  class="btn btn-outline-primary bi-tags mb-1"> {{$item['name']}}</button>
+                    <button style="background-color: lightblue"  class="btn btn-outline-primary bi-tags mb-1" onclick="addTagFilter(this)"> {{$item['name']}}</button>
                 @endforeach
 
                 <form action="{{route('tagFilter')}}" method="POST" id="tagFilterForm">
                     @csrf
                     @method('GET')
-                    <input type="text" name="tags" class="form-control mb-4 mt-5" id="tagFilterInput">
+                    <textarea class="form-control mb-4 mt-5" name="tag" id="tagFilterInput"></textarea>
                     <div class="form-group mt-3">
                         <button type="submit" class="btn btn-primary" id="chosenOnes">Filter</button>
                         <button type="reset" class="btn btn-success">Reset All Filters</button>
@@ -89,20 +89,19 @@
                 <h6 class="text-body-secondary mb-3">This patch note does not belong to any institution.</h6>
                 <hr>
 
-                {{$current_date = null}}
-                @foreach($patch_note as $item)
-                        @if($item->date != $current_date)
-                            <p class="alert alert-primary fs-4 d-md-flex">{{$current_date = $item->date}}</p>
-                        @endif
-                        <div class="bg-light p-3 rounded mb-2" style="">
+                @foreach($date_array as $date)
+                    <p class="alert alert-primary fs-4 d-md-flex">{{$date->format('d-m-Y')}}</p>
+                    @foreach($patch_note as $item)
+                        @if($item->date == $date)
+                        <div class="bg-light p-3 rounded mb-2">
                             @if($item->type == 1)
                             <p class="fs-5 text-danger">Bug Fix</p>
                             @else
                             <p class="fs-5 text-primary">New Patch</p>
                             @endif
                             <p class="fs-7">{{$item->text}}</p>
-                            @foreach($item->PatchNoteLink as $links)
-                            <a href="" class="btn bi bi-box-arrow-up-right text-info"> {{$links}}</a>
+                            @foreach($item->PatchNoteLink as $link)
+                            <a href="{{$link->link}}" type="url" target="_blank" class="btn bi bi-box-arrow-up-right text-info"> {{$link->link}}</a>
                             <br>
                             @endforeach
                             <br>
@@ -118,7 +117,7 @@
                             <br>
                             <br>
                             <div class="d-flex justify-content-end align-items-center mt-2">
-                                <form action="{{route('update', $item->patch_note_id)}}" id="update_form" method="POST" class="d-inline">
+                                <form  class="d-inline" method="POST" id="update_form" action="{{route('update', $item->patch_note_id)}}" >
                                     @csrf
                                     @method('PUT')
                                     <button style="font-size: 20px" type="button" id="update_form" class="btn bi bi-pencil text-warning" data-bs-toggle="modal" data-bs-target="#updateModal{{$item->patch_note_id, $item->patch_note_link_id}}"></button>
@@ -132,30 +131,35 @@
                                                 <div class="modal-body">
                                                     <!--.....................................-->
                                                     <p class="">Patch Note Type </p>
-                                                    <select class="form-select mb-4" name="type" id="type-select">
+                                                    <select class="form-select mb-4" name="type">
+                                                        @if($item->type == 1)
                                                         <option>BUG_FIX</option>
                                                         <option>NEW_PATCH</option>
+                                                        @else
+                                                        <option>NEW_PATCH</option>
+                                                        <option>BUG_FIX</option>
+                                                        @endif
                                                     </select>
                                                     <!--.....................................-->
                                                     <p>Description </p>
                                                     <textarea class="form-control mb-4" name="text">{{$item->text}}</textarea>
                                                     <!--.....................................-->
                                                     <p>Pick Release Date </p>
-                                                    <input type="date" name="date" class="form-control mb-4" value="{{$item->date->format('d-m-Y')}}">
+                                                    <input type="date" name="date" class="form-control mb-4" value="{{$item->date->format('d.m.Y')}}">
                                                     <!--.....................................-->
                                                     <p>Attach the Ticket Link </p>
-                                                    <textarea class="form-control mb-4" name="link"></textarea>
+                                                    <textarea class="form-control mb-4" name="link">{{implode(" #", array_column($item->patchNoteLink->toArray(), 'link'))}}</textarea>
                                                     <!--.....................................-->
                                                     <p>Tags </p>
-                                                    <input class="form-control mb-4" name="tag" id="updateTag" value="{{$item->patchNoteTags->pluck('name')->map(function($tag) { return '#' . $tag; })->implode(', ')}}">
+                                                    <input class="form-control mb-4" name="tag" id="tagFilterUpdate{{$item->patch_note_id}}" value="{{$item->patchNoteTags->pluck('name')->map(function($tag) { return '#' . $tag; })->implode(' ')}}">
 
                                                     @foreach($tag as $items)
-                                                        <button class="btn btn-outline-primary bi-tags mb-1" onclick="update(this)">  {{$items['name']}}</button>
+                                                        <a class="btn btn-outline-primary bi-tags mb-1" onclick="tagUpdate(this, {{$item->patch_note_id}})">{{$items['name']}}</a>
                                                     @endforeach
                                                     <!--.....................................-->
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-danger" form="update_form" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-success" onclick="updateForm()">Save Patch Note</button>
+                                                        <button type="submit" class="btn btn-success" onclick="submitUpdate()">Save Patch Note</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -169,6 +173,8 @@
                                 </form>
                             </div>
                         </div>
+                        @endif
+                    @endforeach
                 @endforeach
             </div>
         </div>
@@ -206,16 +212,78 @@
             document.querySelector("#create_form").submit();
         }
 
+        // create işlemi sırasında bugünün tarihi otomatik olarak gelmesini sağlayan js kodu
+
+        let todayDate = new Date().toISOString().substring(0, 10);
+        document.getElementById('today').value = todayDate;
+
+
+
+        //TODO:UPDATE İŞLEMİ
+        function tagUpdate(element, id) {
+            let tagInput = document.getElementById("tagFilterUpdate" + id);
+            let currentValue = tagInput.value;
+            if (currentValue.length > 0) {
+                tagInput.value = currentValue + " " + "#" + element.innerText.trim();
+            } else {
+                tagInput.value = "#" + element.innerText.trim();
+            }
+        }
+
+        document.getElementById("tagFilterUpdate2").addEventListener("keyup", function(event) {
+            let currentValue = this.value;
+            if (event.code === "Space" && currentValue.slice(-1) !== "#") {
+                this.value = currentValue + "#";
+            }
+        });
+
+        document.querySelector("#update_form").getElementById("submit", function(event) {
+            event.preventDefault();
+        });
+
+        document.querySelector("#update_form[type='submit']").addEventListener("click", function() {
+            document.querySelector("#update_form").submit();
+        });
+
+        function submitUpdate() {
+            document.querySelector("#update_form").submit();
+        }
+
+
+
+
+
+
+
+
+
+
+
         // TODO: İNDEX ANASAYFAMIZDA Kİ TAGLARIN KONTROLÜ
 
+        function addTagFilter(element) {
+            let tagInput = document.getElementById("tagFilterInput");
+            let currentValue = tagInput.value;
+            if (currentValue.length > 0) {
+                tagInput.value = currentValue + " " + "#" + element.innerText.trim();
+            } else {
+                tagInput.value = "#" + element.innerText.trim();
+            }
+        }
 
+        let tagFilterInput = document.getElementById("tagFilterInput");
+        let chosenOnesButton = document.getElementById("chosenOnes");
 
+        tagFilterInput.addEventListener("keydown", function(event) {
+            if (event.keyCode === 32 && this.value.slice(-1) !== "#") {
+                this.value += " #";
+                event.preventDefault();
+            }
+        });
 
-
-        //TODO:İNDEX SAYFASI TAG FİLTRELEME İŞLEMİ
-        // tagları filtrelemek için mevcut tag tıklandığında input içerisine alıyor
-
-
+        chosenOnesButton.addEventListener("click", function(event) {
+            event.preventDefault();
+        });
 
 
     </script>
