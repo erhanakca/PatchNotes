@@ -89,8 +89,14 @@
                 <h6 class="text-body-secondary mb-3">This patch note does not belong to any institution.</h6>
                 <hr>
 
+                @if(!empty($_GET['date']))
+                    <h4 class="mb-3 d-flex justify-content-center" style="color: orangered">{{$_GET['date']}} Dated Patch Notes</h4>
+                @elseif(isset($_GET['date']))
+                    <h4 class="mb-3 d-flex justify-content-center" style="color: orangered">No Patch Notes For This Date</h4>
+                @endif
+
                 @foreach($date_array as $date)
-                    <p class="alert alert-primary fs-4 d-md-flex">{{$date->format('d-m-Y')}}</p>
+                    <p class="alert alert-primary fs-4 d-md-flex">{{$date->format('d/m/Y')}}</p>
                     @foreach($patch_note as $item)
                         @if($item->date == $date)
                         <div class="bg-light p-3 rounded mb-2">
@@ -212,13 +218,6 @@
             document.querySelector("#create_form").submit();
         }
 
-        // create işlemi sırasında bugünün tarihi otomatik olarak gelmesini sağlayan js kodu
-
-        let todayDate = new Date().toISOString().substring(0, 10);
-        document.getElementById('today').value = todayDate;
-
-
-
         //TODO:UPDATE İŞLEMİ
         function tagUpdate(element, id) {
             let tagInput = document.getElementById("tagFilterUpdate" + id);
@@ -248,16 +247,6 @@
         function submitUpdate() {
             document.querySelector("#update_form").submit();
         }
-
-
-
-
-
-
-
-
-
-
 
         // TODO: İNDEX ANASAYFAMIZDA Kİ TAGLARIN KONTROLÜ
 
