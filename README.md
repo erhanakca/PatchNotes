@@ -4,7 +4,7 @@
 
 <h2>Özellikler<h2> 
 <br>    
-<ul style="font-size: 14px;">
+<ul style="font-size: 5px;">
   <li>Yeni sürümler için yama notları oluşturabilirsiniz.</li>
   <li>Her bir sürüm için değişiklikler, geliştirmeler ve düzeltmeler hakkında detaylı bilgi sağlanabilir.</li>
   <li>Kullanıcılar uygulamanın son sürümü hakkında bilgi alabilir ve indirebilir.</li>
