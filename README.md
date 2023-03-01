@@ -15,6 +15,7 @@ Uygulama, kullanımı kolay bir arayüze sahiptir. Yeni bir yama notu oluşturma
 <ol>  
   <li>GitHub repo adresini terminalde çalıştırın: git clone <code>https://github.com/erhanakca/PatchNotes.git</code></li>
   <li>İndirilen klasörde, composer install komutunu çalıştırın. <code>composer install</code></li>
+  <li>Gerekli npm komutlarını çalıştırın. <code>npm install & npm run dev</code></li>
   <li>.env.example dosyasını .env olarak kopyalayın ve ayarlarınızı yapın.</li>
   <li>php artisan key:generate komutunu çalıştırın.</li>
   <li>Veritabanınızı oluşturmak için php artisan migrate komutunu kullanın.</li>
@@ -23,8 +24,8 @@ Uygulama, kullanımı kolay bir arayüze sahiptir. Yeni bir yama notu oluşturma
 ## Katkıda Bulunma
 Katkıda bulunmak isteyen geliştiriciler, GitHub üzerinden pull request'ler oluşturarak projeye katkıda bulunabilirler.
 <p>İNDEX<p>
-<image>(https://user-images.githubusercontent.com/96442253/222019348-720df176-105b-4007-8829-2c2bf81c2d05.png)</image>
+<img src="https://user-images.githubusercontent.com/96442253/222019348-720df176-105b-4007-8829-2c2bf81c2d05.png" alt="İNDEX">
 <p>CREATE<p>    
-![image](https://user-images.githubusercontent.com/96442253/222019428-a112c3aa-0ddd-480b-8759-3f61a0048701.png)
+<img src="https://user-images.githubusercontent.com/96442253/222019428-a112c3aa-0ddd-480b-8759-3f61a0048701.png" alt"CREATE">
 <p>UPDATE<p>    
-![image](https://user-images.githubusercontent.com/96442253/222019503-550a23b2-0cc9-4a1f-b12e-c7b72e7dadfc.png)
+<img src="https://user-images.githubusercontent.com/96442253/222019503-550a23b2-0cc9-4a1f-b12e-c7b72e7dadfc.png" alt="UPDATE">
