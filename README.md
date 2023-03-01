@@ -1,4 +1,5 @@
-<h2 style="text-decoration: underline;">Patch Note Web Uygulaması<h2>
+<h2>Patch Note Web Uygulaması<h2>
+<br>    
 <p>Bu uygulama, kullanıcıların farklı sürümler arasındaki farkları takip edebilmesi için tasarlanmış bir patch note (yama notu) web uygulamasıdır. Uygulama, Laravel PHP framework'ü kullanılarak geliştirilmiştir ve kolayca özelleştirilebilir bir yapıya sahiptir.</p>
 
 <h2>Özellikler<h2> 
@@ -9,7 +10,8 @@
   <li>Kullanıcılar uygulamanın son sürümü hakkında bilgi alabilir ve indirebilir.</li>
 </ul>    
 
-<h2 style="text-decoration: underline;">Kullanım</h2>
+<h2>Kullanım</h2>
+<br>
 <p>Uygulama, kullanımı kolay bir arayüze sahiptir. Yeni bir yama notu oluşturmak için, sadece bir sürüm numarası, başlık ve açıklama girin. Daha sonra, yama notunuz otomatik olarak ana sayfada ve "Yama Notları" sayfasında listelenir.</p>
 
 <h2 style="text-decoration: underline;">Kurulum</h2>
