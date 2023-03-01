@@ -13,7 +13,7 @@ Uygulama, kullanımı kolay bir arayüze sahiptir. Yeni bir yama notu oluşturma
 
 ## Uygulamanın kurulumu oldukça basittir. Aşağıdaki adımları izleyerek hızlıca kurabilirsiniz
 <ol>  
-  <li>GitHub repo adresini terminalde çalıştırın: git clone https://github.com/erhanakca/PatchNotes.git</li>
+  <li>GitHub repo adresini terminalde çalıştırın: git clone <code>https://github.com/erhanakca/PatchNotes.git</code></li>
   <li>İndirilen klasörde, composer install komutunu çalıştırın. <code>composer install</code></li>
   <li>.env.example dosyasını .env olarak kopyalayın ve ayarlarınızı yapın.</li>
   <li>php artisan key:generate komutunu çalıştırın.</li>
